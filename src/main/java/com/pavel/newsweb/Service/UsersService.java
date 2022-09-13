@@ -3,9 +3,11 @@ package com.pavel.newsweb.Service;
 import com.pavel.newsweb.Dto.UsersDto;
 import com.pavel.newsweb.Entity.UsersEntity;
 
+import java.util.List;
+
 public interface UsersService {
 
-    UsersDto GetAllUsers();
+    List<UsersDto> GetAllUsers();
 
     UsersDto FindById(Long id);
 
