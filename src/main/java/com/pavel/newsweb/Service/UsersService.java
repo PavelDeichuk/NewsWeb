@@ -2,6 +2,7 @@ package com.pavel.newsweb.Service;
 
 import com.pavel.newsweb.Dto.UsersDto;
 import com.pavel.newsweb.Entity.UsersEntity;
+import com.pavel.newsweb.Model.Answer;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface UsersService {
 
     UsersDto EditUser(Long id, UsersEntity usersEntity);
 
-    UsersDto DeleteUser(Long id);
+    Answer DeleteUser(Long id);
 
     UsersDto ActivateAccount(String activationcode);
 }
