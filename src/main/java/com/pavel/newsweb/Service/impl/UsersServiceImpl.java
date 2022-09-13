@@ -5,10 +5,14 @@ import com.pavel.newsweb.Entity.UsersEntity;
 import com.pavel.newsweb.Service.UsersService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UsersServiceImpl implements UsersService {
+
+
     @Override
-    public UsersDto GetAllUsers() {
+    public List<UsersDto> GetAllUsers() {
         return null;
     }
 
