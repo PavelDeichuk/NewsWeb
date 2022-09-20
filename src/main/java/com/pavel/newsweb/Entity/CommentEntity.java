@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Table(name = "comment")
 public class CommentEntity {
     @Id
@@ -25,9 +26,11 @@ public class CommentEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private UsersEntity usersEntity;
 
     @ManyToOne
     @JoinColumn(name = "news_id")
+    @ToString.Exclude
     private NewsEntity newsEntity;
 }
