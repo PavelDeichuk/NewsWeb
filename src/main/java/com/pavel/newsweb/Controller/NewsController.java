@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -52,10 +53,12 @@ public class NewsController {
     @Operation(summary = "Create News", method = "Post", description = "Create News")
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('USER')")
-    public NewsDto CreateNews(@Valid @RequestBody NewsEntity newsEntity, BindingResult bindingResult){
+    public NewsDto CreateNews(@Valid @RequestBody NewsEntity newsEntity,
+                              BindingResult bindingResult,
+                              Principal principal){
         log.info("Controller: Create News " + newsEntity);
         kafkaSender.SendMessage("newstopic", "Controller: Create News " + newsEntity.toString());
-        return newsService.CreateNews(newsEntity, bindingResult);
+        return newsService.CreateNews(newsEntity, bindingResult, principal);
     }
 
     @RequestMapping(value = GET_NEWS_CATEGORY, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
