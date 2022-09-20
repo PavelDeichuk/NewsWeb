@@ -9,9 +9,12 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Table(name = "category")
 public class CategoryEntity {
     @Id
@@ -28,29 +31,7 @@ public class CategoryEntity {
             joinColumns = @JoinColumn(name = "news_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     @JsonIgnore
+    @ToString.Exclude
     private List<NewsEntity> newsEntity;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<NewsEntity> getNewsEntity() {
-        return newsEntity;
-    }
-
-    public void setNewsEntity(List<NewsEntity> newsEntity) {
-        this.newsEntity = newsEntity;
-    }
 }
