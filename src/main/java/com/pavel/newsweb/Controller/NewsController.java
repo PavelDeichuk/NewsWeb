@@ -52,7 +52,7 @@ public class NewsController {
     @SecurityRequirement(name = "Bearer Authentication")
     public NewsDto CreateNews(@Valid @RequestBody NewsEntity newsEntity, BindingResult bindingResult){
         log.info("Controller: Create News " + newsEntity);
-        kafkaSender.SendMessage("newstopic", "Controller: Create News " + newsEntity);
+        kafkaSender.SendMessage("newstopic", "Controller: Create News " + newsEntity.toString());
         return newsService.CreateNews(newsEntity, bindingResult);
     }
 
