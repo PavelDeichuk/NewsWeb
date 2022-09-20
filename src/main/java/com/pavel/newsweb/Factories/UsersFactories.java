@@ -11,6 +11,7 @@ public class UsersFactories {
                  .username(usersEntity.getUsername())
                  .email(usersEntity.getEmail())
                  .roles(usersEntity.getRoles())
+                 .newsEntities(usersEntity.getNewsEntities())
                  .build();
      }
 }
