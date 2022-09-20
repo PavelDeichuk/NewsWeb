@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +56,7 @@ public class UsersController {
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create User", method = "Post", description = "Create User")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public UsersDto CreateUsers(@Valid @RequestBody UsersEntity usersEntity, BindingResult bindingResult){
         log.info("Controller: Create user " + usersEntity);
         kafkaSender.SendMessage("newstopic", "Controller: Create user " + usersEntity);
@@ -64,6 +66,7 @@ public class UsersController {
     @RequestMapping(value = USERS_ID, method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Edit User", method = "Put", description = "Edit User")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public UsersDto EditUsers(@RequestBody UsersEntity usersEntity, @PathVariable Long user_id){
         log.info("Controller: Edit user");
         kafkaSender.SendMessage("newstopic", "Controller: Edit user " + usersEntity);
@@ -73,6 +76,7 @@ public class UsersController {
     @RequestMapping(value = USERS_ID, method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Delete User By id", method = "Delete", description = "Delete User")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public Answer DeleteUsers(@PathVariable Long user_id){
         log.info("Controller: Delete user " + user_id);
         kafkaSender.SendMessage("newstopic", "Controller: Delete user " + user_id);
