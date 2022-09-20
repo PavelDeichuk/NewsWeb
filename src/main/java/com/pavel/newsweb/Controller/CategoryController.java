@@ -24,7 +24,6 @@ import java.util.List;
 public class CategoryController {
      private final CategoryServiceImpl categoryService;
 
-     private final CategoryRepository categoryRepository;
 
      private final KafkaSenderImpl kafkaSender;
 
@@ -32,9 +31,8 @@ public class CategoryController {
 
     private static final String ADDNEWSFORCATEGORY = "/news/{news_id}/category/{category_id}";
 
-    public CategoryController(CategoryServiceImpl categoryService, CategoryRepository categoryRepository, KafkaSenderImpl kafkaSender) {
+    public CategoryController(CategoryServiceImpl categoryService, KafkaSenderImpl kafkaSender) {
         this.categoryService = categoryService;
-        this.categoryRepository = categoryRepository;
         this.kafkaSender = kafkaSender;
     }
 
@@ -59,7 +57,7 @@ public class CategoryController {
     @SecurityRequirement(name = "Bearer Authentication")
     public CategoryDto CreateCategory(@Valid @RequestBody CategoryEntity category, BindingResult bindingResult){
         log.info("Controller: Fetching category create");
-        kafkaSender.SendMessage("newstopic", "Controller : Fetching category create " + category);
+        kafkaSender.SendMessage("newstopic", "Controller : Fetching category create " + category.toString());
         return categoryService.CreateCategory(category, bindingResult);
     }
 
@@ -77,7 +75,7 @@ public class CategoryController {
     @SecurityRequirement(name = "Bearer Authentication")
     public CategoryDto EditCategory(@PathVariable Long category_id,
                                     @Valid @RequestBody CategoryEntity categoryEntity){
-        log.info("Controller: Fetching category edit");
+        log.info("Controller: Fetching category edit " + category_id);
         kafkaSender.SendMessage("newstopic", "Controller : Fetching category edit " + category_id);
         return categoryService.EditCategory(category_id, categoryEntity);
     }
@@ -86,7 +84,7 @@ public class CategoryController {
     @Operation(summary = "Delete Category", method = "Delete", description = "Delete Category")
     @SecurityRequirement(name = "Bearer Authentication")
     public Answer DeleteCategory(@PathVariable Long category_id){
-        log.info("Controller: Fetching category delete");
+        log.info("Controller: Fetching category delete " + category_id);
         kafkaSender.SendMessage("newstopic", "Controller: Fetching category delete " + category_id);
         return categoryService.DeleteCategory(category_id);
     }
