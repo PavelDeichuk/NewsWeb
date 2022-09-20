@@ -2,13 +2,16 @@ package com.pavel.newsweb.Service.impl;
 
 import com.pavel.newsweb.Dto.UsersDto;
 import com.pavel.newsweb.Entity.UsersEntity;
+import com.pavel.newsweb.Exception.BadRequestException;
+import com.pavel.newsweb.Exception.NotFoundException;
 import com.pavel.newsweb.Factories.AnswerFactories;
 import com.pavel.newsweb.Factories.UsersFactories;
 import com.pavel.newsweb.Model.Answer;
 import com.pavel.newsweb.Repository.UsersRepository;
 import com.pavel.newsweb.Service.UsersService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,15 +23,18 @@ public class UsersServiceImpl implements UsersService {
 
     private final UsersRepository usersRepository;
 
-    public UsersServiceImpl(UsersRepository usersRepository) {
+    private final EmailServiceImpl emailService;
+
+    public UsersServiceImpl(UsersRepository usersRepository, EmailServiceImpl emailService) {
         this.usersRepository = usersRepository;
+        this.emailService = emailService;
     }
 
     @Override
     public List<UsersDto> GetAllUsers() {
         List<UsersEntity> usersEntities = usersRepository.findAll();
         if(usersEntities.isEmpty()){
-            throw new RuntimeException("Users list is empty!");
+            throw new NotFoundException("Users list is empty!");
         }
         return usersEntities
                 .stream()
@@ -41,26 +47,33 @@ public class UsersServiceImpl implements UsersService {
         UsersEntity users = usersRepository
                 .findById(id)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for user id");
+                    throw new NotFoundException("Not found for user id");
                 });
         return UsersFactories.MAKE_DTO(users);
     }
 
     @Override
-    public UsersDto CreateUser(UsersEntity usersEntity) {
+    public UsersDto CreateUser(UsersEntity usersEntity, BindingResult bindingResult) {
         usersRepository
                 .findByUsername(usersEntity.getUsername())
                 .ifPresent(username -> {
-                    throw new RuntimeException("Username is exist!");
+                    throw new BadRequestException("Username is exist!");
                 });
         usersRepository
                 .findByEmail(usersEntity.getEmail())
                 .ifPresent(email -> {
-                    throw new RuntimeException("Email is exist");
+                    throw new BadRequestException("Email is exist");
                 });
-        if(!Objects.equals(usersEntity.getPassword(), usersEntity.getPassword2())){
-            throw new RuntimeException("Password is not equals");
+        if(bindingResult.hasErrors()){
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            for (FieldError error : fieldErrors){
+                throw new BadRequestException(error.getObjectName() + " " + error.getDefaultMessage());
+            }
         }
+        if(!Objects.equals(usersEntity.getPassword(), usersEntity.getPassword2())){
+            throw new BadRequestException("Password is not equals");
+        }
+        emailService.Send(usersEntity.getEmail(), "Activate account", "Your activation code is: " + usersEntity.getActivationcode());
         UsersEntity users = usersRepository
                 .saveAndFlush(
                         UsersEntity
@@ -69,7 +82,7 @@ public class UsersServiceImpl implements UsersService {
                                 .password(usersEntity.getPassword())
                                 .email(usersEntity.getEmail())
                                 .roles("QUEST")
-                                .activationcode(UUID.randomUUID().toString())
+                                .activationcode(usersEntity.getActivationcode())
                                 .build()
                 );
         return UsersFactories.MAKE_DTO(users);
@@ -91,21 +104,21 @@ public class UsersServiceImpl implements UsersService {
         usersRepository
                 .findById(id)
                 .orElseThrow(() -> {
-                    throw new RuntimeException("Not found for user id");
+                    throw new NotFoundException("Not found for user id");
                 });
         usersRepository.deleteById(id);
         return AnswerFactories.answer(true);
     }
 
     @Override
-    public UsersDto ActivateAccount(String activationcode) {
+    public Answer ActivateAccount(String activationcode) {
       UsersEntity users = usersRepository.findByActivationcode(activationcode);
       if(users == null){
-          throw new RuntimeException("Account is activated!");
+          throw new BadRequestException("Account is activated!");
       }
       users.setActivationcode(null);
       users.setRoles("USER");
      UsersEntity usersave = usersRepository.save(users);
-      return UsersFactories.MAKE_DTO(usersave);
+      return AnswerFactories.answer(true);
     }
 }
