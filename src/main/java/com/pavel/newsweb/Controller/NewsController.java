@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +51,7 @@ public class NewsController {
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create News", method = "Post", description = "Create News")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public NewsDto CreateNews(@Valid @RequestBody NewsEntity newsEntity, BindingResult bindingResult){
         log.info("Controller: Create News " + newsEntity);
         kafkaSender.SendMessage("newstopic", "Controller: Create News " + newsEntity.toString());
@@ -69,6 +71,7 @@ public class NewsController {
     @RequestMapping(value = NEWS_ID, method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Edit News", method = "Put", description = "Edit News")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public NewsDto EditNews(@PathVariable Long news_id, @RequestBody NewsEntity newsEntity){
         log.info("Controller: Edit news " + news_id);
         kafkaSender.SendMessage("newstopic", "Controller: Edit news " + news_id);
@@ -79,6 +82,7 @@ public class NewsController {
     @RequestMapping(value = NEWS_ID, method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Delete News", method = "Delete", description = "Delete News")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public Answer DeleteNews(@PathVariable Long news_id){
         log.info("Controller: Delete news " + news_id);
         kafkaSender.SendMessage("newstopic", "Controller: Delete news " + news_id);
