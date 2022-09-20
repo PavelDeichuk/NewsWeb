@@ -52,8 +52,8 @@ public class CommentController {
                                      @PathVariable Long news_id,
                                      @Valid @RequestBody CommentEntity commentEntity,
                                      BindingResult bindingResult) {
-        log.info("Controller: Create comment " + commentEntity);
-        kafkaSender.SendMessage("newstopic", "Controller: Create comment " + commentEntity);
+        log.info("Controller: Create comment " + commentEntity.toString());
+        kafkaSender.SendMessage("newstopic", "Controller: Create comment " + commentEntity.toString());
         return commentService.CreateComment(principal.getName(), news_id, commentEntity, bindingResult);
     }
 
@@ -73,7 +73,7 @@ public class CommentController {
     @SecurityRequirement(name = "Bearer Authentication")
     public Answer DeleteComment(@PathVariable Long comment_id) {
         log.info("Controller: Fetching delete comment " + comment_id);
-        kafkaSender.SendMessage("newstopic", "Controller: Fetching delete comment " + comment_id );
+        kafkaSender.SendMessage("newstopic", "Controller: Fetching delete comment: " + comment_id);
         return commentService.DeleteComment(comment_id);
     }
 
