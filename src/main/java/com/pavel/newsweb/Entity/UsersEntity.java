@@ -16,6 +16,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Table(name = "users")
 public class UsersEntity {
     @Id
@@ -28,9 +29,11 @@ public class UsersEntity {
 
     @NotNull(message = "Password null!")
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$", message = "error validation password")
+    @ToString.Exclude
     private String password;
 
     @Transient
+    @ToString.Exclude
     private String password2;
 
     @Email(message = "email is not valid")
@@ -42,5 +45,8 @@ public class UsersEntity {
     private String activationcode = UUID.randomUUID().toString();
 
     @ManyToMany(mappedBy = "usersEntities")
+    @ToString.Exclude
     private List<NewsEntity> newsEntities;
+
+
 }
