@@ -73,13 +73,18 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public NewsDto CreateNews(NewsEntity newsEntity, BindingResult bindingResult) {
+    public NewsDto CreateNews(NewsEntity newsEntity, BindingResult bindingResult, Principal principal) {
         if(bindingResult.hasErrors()){
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             for (FieldError error : fieldErrors){
                 throw new BadRequestException(error.getObjectName() + " " + error.getDefaultMessage());
             }
         }
+        UsersEntity users = usersRepository
+                .findByUsername(principal.getName())
+                .orElseThrow(() -> {
+                    throw new NotFoundException("Please login for site!");
+                });
        NewsEntity newsEntity1 = newsRepository
                .saveAndFlush(
                        NewsEntity
@@ -87,6 +92,7 @@ public class NewsServiceImpl implements NewsService {
                                .id(newsEntity.getId())
                                .title(newsEntity.getTitle())
                                .description(newsEntity.getDescription())
+                               .usersEntities(users)
                                .build()
                );
        return NewsFactories.MAKE_DTO(newsEntity1);
