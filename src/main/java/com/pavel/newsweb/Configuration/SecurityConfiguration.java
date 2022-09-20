@@ -3,6 +3,7 @@ package com.pavel.newsweb.Configuration;
 import com.pavel.newsweb.Filter.JwtFilter;
 import com.pavel.newsweb.Point.CustomAuthenticationEntryPoint;
 import com.pavel.newsweb.Service.impl.UsersDetailService;
+import com.pavel.newsweb.handler.CustomAccessDeniedHandler;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
@@ -36,10 +37,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    public SecurityConfiguration(UsersDetailService usersDetailService, JwtFilter jwtFilter, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    public SecurityConfiguration(UsersDetailService usersDetailService, JwtFilter jwtFilter, CustomAuthenticationEntryPoint customAuthenticationEntryPoint, CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.usersDetailService = usersDetailService;
         this.jwtFilter = jwtFilter;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
     @Override
@@ -69,6 +73,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.httpBasic().authenticationEntryPoint(customAuthenticationEntryPoint);
+        http.exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
     }
 
     @Override
