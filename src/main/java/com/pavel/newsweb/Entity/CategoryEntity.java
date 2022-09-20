@@ -31,7 +31,6 @@ public class CategoryEntity {
             joinColumns = @JoinColumn(name = "news_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     @JsonIgnore
-    @ToString.Exclude
     private List<NewsEntity> newsEntity;
 
 }
