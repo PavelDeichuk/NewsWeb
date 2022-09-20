@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +56,7 @@ public class CategoryController {
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create Category", method = "Post", description = "Create Category")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public CategoryDto CreateCategory(@Valid @RequestBody CategoryEntity category, BindingResult bindingResult){
         log.info("Controller: Fetching category create");
         kafkaSender.SendMessage("newstopic", "Controller : Fetching category create " + category.toString());
@@ -64,6 +66,7 @@ public class CategoryController {
     @RequestMapping(value = ADDNEWSFORCATEGORY,method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Add news for category", method = "Get", description = "Add news for category")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public Answer AddNewsForCategory(@PathVariable Long news_id, @PathVariable Long category_id){
         log.info("Controller: UpdateCategoryNews");
         kafkaSender.SendMessage("newstopic", "Controller: UpdateCategoryNews");
@@ -73,6 +76,7 @@ public class CategoryController {
     @RequestMapping(value = CATEGORY_ID, method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Edit Category", method = "Put", description = "Edit Category")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public CategoryDto EditCategory(@PathVariable Long category_id,
                                     @Valid @RequestBody CategoryEntity categoryEntity){
         log.info("Controller: Fetching category edit " + category_id);
@@ -83,6 +87,7 @@ public class CategoryController {
     @RequestMapping(value = CATEGORY_ID, method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Delete Category", method = "Delete", description = "Delete Category")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public Answer DeleteCategory(@PathVariable Long category_id){
         log.info("Controller: Fetching category delete " + category_id);
         kafkaSender.SendMessage("newstopic", "Controller: Fetching category delete " + category_id);
