@@ -43,12 +43,9 @@ public class NewsEntity {
     @JsonIgnore
     private List<CategoryEntity> categoryEntities;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "news_users",
-            joinColumns = @JoinColumn(name = "news_id"),
-            inverseJoinColumns = @JoinColumn(name = "users_id"))
+    @ManyToOne
+    @JoinColumn(name = "users_id")
     @ToString.Exclude
-    private List<UsersEntity> usersEntities;
+    private UsersEntity usersEntities;
 
 }
