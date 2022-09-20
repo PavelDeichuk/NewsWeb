@@ -7,8 +7,10 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Getter
@@ -44,9 +46,10 @@ public class UsersEntity {
 
     private String activationcode = UUID.randomUUID().toString();
 
-    @ManyToMany(mappedBy = "usersEntities")
+    @OneToMany(mappedBy = "usersEntities", cascade = CascadeType.ALL)
     @ToString.Exclude
-    private List<NewsEntity> newsEntities;
+    @JsonIgnore
+    private List<NewsEntity> newsEntities = new ArrayList<>();
 
 
 }
