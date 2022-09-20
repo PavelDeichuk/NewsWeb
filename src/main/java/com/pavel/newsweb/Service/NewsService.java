@@ -17,7 +17,7 @@ public interface NewsService {
 
     CategoryDto GetNewsByCategory(String category_name);
 
-    NewsDto CreateNews(NewsEntity newsEntity, BindingResult bindingResult);
+    NewsDto CreateNews(NewsEntity newsEntity, BindingResult bindingResult, Principal principal);
 
     NewsDto EditNews(Long id, NewsEntity newsEntity);
 
