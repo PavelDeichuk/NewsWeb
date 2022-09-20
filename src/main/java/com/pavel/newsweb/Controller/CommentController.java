@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,7 @@ public class CommentController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get All Comments", method = "Get", description = "Get All Comments")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<CommentDto> GetAllComments() {
         log.info("Controller: Fetching comment all");
         kafkaSender.SendMessage("newstopic", "Controller: Fetching comment all");
@@ -48,6 +50,7 @@ public class CommentController {
     @RequestMapping(value = CREATE_COMMENT, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create comment", method = "Post", description = "Create comment")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public CommentDto CreateComments(Principal principal,
                                      @PathVariable Long news_id,
                                      @Valid @RequestBody CommentEntity commentEntity,
@@ -60,6 +63,7 @@ public class CommentController {
     @RequestMapping(value = COMMENT_ID, method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Edit comment", method = "Put", description = "Edit comment")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public CommentDto EditComment(@Valid @RequestBody CommentEntity commentEntity,
                                   @PathVariable Long comment_id,
                                   Principal principal) {
@@ -71,6 +75,7 @@ public class CommentController {
     @RequestMapping(value = COMMENT_ID, method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create comment", method = "Post", description = "Create comment")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('USER')")
     public Answer DeleteComment(@PathVariable Long comment_id) {
         log.info("Controller: Fetching delete comment " + comment_id);
         kafkaSender.SendMessage("newstopic", "Controller: Fetching delete comment: " + comment_id);
